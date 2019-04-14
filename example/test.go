@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/rand"
+	"runtime"
 	"strconv"
 	"time"
 
@@ -9,7 +10,7 @@ import (
 	"github.com/zartbot/gograph"
 )
 
-const MAXNode = 10000
+const MAXNode = 4096
 
 func main() {
 	g := gograph.NewGraph()
@@ -24,10 +25,12 @@ func main() {
 		w := int64(r1.Intn(MAXNode))
 		g.AddEdge(u, v, w)
 	}
+	runtime.GOMAXPROCS(8)
 
 	start := time.Now()
 	dist, prev := gograph.Dijkstra(g, g.VertexMap["0"])
 	elapsed := time.Since(start)
+
 	for idx := 0; idx < 100; idx++ {
 		DstVertex := strconv.Itoa(r1.Intn(MAXNode))
 		logrus.WithFields(
@@ -38,4 +41,9 @@ func main() {
 			}).Info("Path", g.Path(g.VertexMap[DstVertex], prev))
 	}
 	logrus.Warn("Elapsed Time:", elapsed)
+
+	start2 := time.Now()
+	gograph.DijkstraParallel(g, g.VertexMap["0"])
+	elapsed2 := time.Since(start2)
+	logrus.Warn("Elapsed Time in Parallel:", elapsed2)
 }
