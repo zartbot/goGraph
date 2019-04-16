@@ -1,9 +1,7 @@
 package gograph
 
-import "math"
-
 const (
-	INFINITY    = math.MaxInt64 //int64(^uint64(0) >> 1)
+	INFINITY    = int64(0x3f3f3f)
 	UNINITVALUE = -1
 )
 
